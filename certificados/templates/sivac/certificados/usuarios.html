@@ -1,0 +1,58 @@
+{% extends 'sivac/certificados/base.html' %}
+{% load static %}
+{% block conteudo %}
+    <h3 class="font-weight-light pb-3 d-print-none">Estudantes</h3>
+    <div class="d-none d-print-block">
+	    <h3 class="font-weight-light">Relatório de Acompanhamento de Atividades Complementares</h3>
+	    <p><b class="text-muted"> Curso de {{user.perfil.curso}}</b></p>
+    </div>
+    <a href="/sivac/certificados/importar/" class="d-print-none btn btn-success float-end"><i class="bi bi-filetype-csv"></i> Importar estudantes</a>
+    <button onclick="window.print()" title="Imprimir"  class="mx-1 d-print-none btn btn-primary float-end"><i class="bi bi-printer"></i></button>
+
+    {% if lista_usuarios %}
+        <div class="d-print-none div_barra_pesquisa mb-3">
+		<i class="bi bi-search lupa"></i> <input class="form-control barra_pesquisa_certificados" value="" type="search" id="barra_pesquisa" placeholder="Insira o nome para buscar">
+        </div>
+
+        <table class="table">
+            <form action="/sivac/certificados/usuarios/" method="POST">
+                <div class="forminvisivel">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                </div>
+		<thead>
+                <tr>
+                    <th> <input onclick="att_formFiltro('matricula')" type="submit" class="linkFiltros fw-bold" id="submit_matricula" value="Matricula"><br> </th>
+                    <th> <input onclick="att_formFiltro('nome')" type="submit" class="linkFiltros fw-bold" id="submit_nome" value="Nome"><br> </th>
+                    <th class="d-print-none"> <input onclick="att_formFiltro('turma')" type="submit" class="linkFiltros fw-bold" id="submit_turma" value="Turma"><br> </th>
+                    <th> <input onclick="att_formFiltro('horas_concluidas')" type="submit" class="linkFiltros fw-bold" id="submit_horas" value="C.H."><br> </th>
+                    <th> <input onclick="att_formFiltro('progresso')" type="submit" class="linkFiltros fw-bold" id="submit_progresso" value="Progresso"><br> </th>
+                    <th> <input onclick="att_formFiltro('situacao')" type="submit" class="linkFiltros fw-bold" id="submit_situacao" value="Situação"><br> </th>
+                    <th class="d-print-none"> <input onclick="att_formFiltro('ultimo_acesso')" type="submit" class="linkFiltros fw-bold" id="submit_ultimo_acesso" value="Último acesso"><br> </th>
+                </tr>
+		</thead>
+            </form>
+
+            <div>
+                {% for u in lista_usuarios %}
+                    {% if not u.is_superuser %}
+                        <tr id="tabela_{{u.id}}" style="display: normal;" class="elementos_tabela">
+                            <td>{{u.perfil.matricula}}</td>
+                            <td class="break-word"><a id="nome_tabela_{{u.id}}" href="/sivac/certificados/usuario/{{u.id}}">{{u.first_name}} {{u.last_name}}</a></td>     
+                            <td class="d-print-none break-all">{{u.perfil.turma}}</td>
+                            <td class="break-all">{{u.perfil.horas_concluidas}}</td>
+                            <td class="break-all">{{u.perfil.percentual_integralizado}} %</td>
+                            <td >{{u.perfil.situacao}}</td>
+                            <td class="d-print-none break-all">{{u.last_login}}</td>
+                        </tr>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </table>
+    
+    {% else %}
+        <p>Nenhum usuário cadastrado.</p>
+    {% endif %}
+
+    <script src="{% static 'sivac/certificados/usuarios.js'%}"></script>
+{% endblock %}
